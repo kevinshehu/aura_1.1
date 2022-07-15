@@ -1,0 +1,92 @@
+<aura:component  controller="OpportunityController" implements="flexipage:availableForAllPageTypes,force:appHostable,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,force:hasSobjectName">
+    <!-- get data from apex -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="opportunityList" type="Opportunity[]"/>
+
+    <!-- table elements-->
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="sortBy" type="String" />
+    <aura:attribute name="sortDirection" type="String"/>
+
+    <!-- popup attributes -->
+    <aura:attribute name="isClicked" type="boolean" default="false"/>
+
+    <aura:attribute name="subjectValue" type="String" default=""/>
+    
+    <aura:attribute name="statusValue" type="String" />
+    <aura:attribute name="statusValues" type="List"/>
+
+    <aura:attribute name="priorityValue" type="String"/>
+    <aura:attribute name="priorityValues" type="List"/>
+
+    <!-- relate to account -->
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="userId" type="Id"/>
+
+    <lightning:card>
+        <div>
+            <div class="c-container">
+                <lightning:layout  multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="12" class="slds-clearfix" >
+                        <div class="slds-float_right">
+                            <lightning:button aura:id='createTask' variant="brand-outline" label="Create new task" title="Brand action" onclick="{!c.showModal}" />
+                        </div>
+                    </lightning:layoutItem>
+            
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <lightning:datatable data="{!v.opportunityList}"
+                                columns="{!v.mycolumns}"
+                                keyField="id"
+                                sortedBy="{!v.sortBy}"
+                                sortedDirection="{!v.sortDirection}"
+                                onsort="{!c.doSort}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            
+            </div>
+        </div>
+
+        <!-- popup -->
+        <aura:if isTrue="{!v.isClicked}">
+            <div class="bg"></div>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-m-around_x-large c-popup">
+                <div class="slds-modal__container">
+                  <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                      X
+                  </button>
+                
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">Add Task</h2> 
+                    </div>
+              
+                    <!-- popup body -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!-- subject input field -->
+                        <lightning:input name ="Subject" label="Subject" value="{!v.subjectValue}" required="true" />
+                            
+                        <!-- status input field -->
+                        <lightning:select  name ="Status" label="Status" value="{!v.statusValue}" required="true">
+                                <option value="">--None--</option> \
+                                <aura:iteration items="{!v.statusValues}" var="i" indexVar="key">
+                                    <option text="{!i.value}" value="{!i.key}" selected="{!i.key==v.statusValue}" />
+                                </aura:iteration>
+                        </lightning:select>
+
+                        <!-- priority input field -->
+                        <lightning:select  name ="priority" label="Priority" value="{!v.priorityValue}" required="true" >
+                                <option value="">--None--</option> \
+                                <aura:iteration items="{!v.priorityValues}" var="i" indexVar="key">
+                                    <option text="{!i.value}" value="{!i.key}" selected="{!i.key==v.statusValue}" />
+                                </aura:iteration>
+                        </lightning:select>
+                    </div>
+              
+                    <div class="slds-modal__footer">
+                        <lightning:button class="slds-button slds-button_neutral" onclick="{!c.hideModal}" label="Cancel" />
+                        <lightning:button class="slds-button slds-button_brand" label="Submit" onclick="{!c.createRecord}" />
+                    </div>
+                </div>
+            </section>
+        </aura:if>
+    </lightning:card>
+</aura:component>
